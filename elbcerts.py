@@ -15,11 +15,11 @@ def cmdline():
     parser = argparse.ArgumentParser()
     parser.add_argument(
             '-d', '--deadline',
-            help='Number of days before certificate expiration to warn',
+            help='Number of days before certificate expiration to warn. (default: 30)',
             default=30, type=int)
     parser.add_argument(
             '-r', '--region',
-            help='AWS Region to check for ELBs with certificates at risk.',
+            help='AWS Region to check for ELBs with certificates at risk. (default: eu-west-1)',
             default='eu-west-1')
     return parser.parse_args()
 
@@ -30,7 +30,7 @@ def check_elb_certs(lb, deadline):
         lbport, beport, proto = listener.get_tuple()
         if proto in ('HTTPS', 'SSL'):
             cert_arn = listener.ssl_certificate_id
-            # Retrieving the certificate names and actual certificate body from the AWS responses are a bit clumsy:
+            # Retrieving the certificate names and actual certificate body from the AWS responses is a bit clumsy:
             certname = cert_arn.split(':')[5].split('/')[-1]
             cert = (iam_connection.get_server_certificate(certname)
                         ['get_server_certificate_response']
